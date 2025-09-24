@@ -1,7 +1,7 @@
 <p align="center">
   <img src="assets/title.png" alt="MeshMosaic">
 </p>
-Official code of the paper: MeshMosaic: Scaling Artist Mesh Generation via Local-to-Global Assembly.
+Official code of MeshMosaic: Scaling Artist Mesh Generation via Local-to-Global Assembly.
 
 [[Project Page]](https://xrvitd.github.io/MeshMosaic/index.html)    [[Paper]](#)
 
