@@ -10,7 +10,7 @@ Official code of MeshMosaic: Scaling Artist Mesh Generation via Local-to-Global 
 ## 📋 Release Todo List
 
 
-- [*] Release pretrained checkpoints
+- [x] Release pretrained checkpoints
 - [ ] Release inference code
 - [ ] Release data preprocessing code
 - [ ] Release training code
