@@ -37,19 +37,146 @@
 ## 📋 Release Todo List
 
 - [x] Release pretrained checkpoints
-- [ ] Release inference code
+- [x] Release inference code
 - [ ] Release data preprocessing code
 - [ ] Release training code
 
-Follow our progress for updates. Code and resources will be released soon!
+## Environment Setup
 
-## 📖 Abstract
+We tested on A100, A800 and H20 GPUs with CUDA 12.4 and CUDA 11.8. Follow the steps below to set up the environment.
 
-Scaling artist-designed meshes to high triangle numbers remains challenging for autoregressive generative models. Existing transformer-based methods suffer from long-sequence bottlenecks and limited quantization resolution, primarily due to the large number of tokens required and constrained quantization granularity. These issues prevent faithful reproduction of fine geometric details and structured density patterns.
+### 1) Create Conda env and install PyTorch (CUDA 12.4)
+```bash
+conda create -n MeshMosaic python=3.12 -y
+conda activate MeshMosaic
 
-We introduce MeshMosaic, a novel local-to-global framework for artist mesh generation that scales to over 100K triangles—substantially surpassing prior methods, which typically handle only around 8K faces. MeshMosaic first segments shapes into patches, generating each patch autoregressively and leveraging shared boundary conditions to promote coherence, symmetry, and seamless connectivity between neighboring regions.
+# PyTorch 2.5.1 + CUDA 12.4
+pip install --index-url https://download.pytorch.org/whl/cu124 \
+  torch==2.5.1+cu124 torchvision==0.20.1+cu124 torchaudio==2.5.1+cu124
 
-This strategy enhances scalability to high-resolution meshes by quantizing patches individually, resulting in more symmetrical and organized mesh density and structure. Extensive experiments across multiple public datasets demonstrate that MeshMosaic significantly outperforms state-of-the-art methods in both geometric fidelity and user preference, supporting superior detail representation and practical mesh generation for real-world applications.
+# Core dependencies
+pip install -U xformers==0.0.28.post3
+pip install torch-cluster -f https://data.pyg.org/whl/torch-2.5.1+cu124.html
+pip install packaging
+```
+
+### 2) Install FlashAttention and custom kernels
+```bash
+git clone https://github.com/Dao-AILab/flash-attention
+cd flash-attention
+python setup.py install
+
+# If you encounter build issues, try FlashAttention==2.8.0 or 2.7.3
+
+cd csrc/rotary && pip install .
+cd ../layer_norm && pip install .
+cd ../xentropy && pip install .
+```
+
+### 3) Install remaining Python packages
+```bash
+pip install pymeshlab jaxtyping boto3 trimesh beartype lightning safetensors \
+  open3d omegaconf sageattention triton scikit-image transformers gpustat \
+  wandb pudb
+pip install libigl
+```
+
+> Note: For CUDA 11.8 users, install the corresponding PyTorch/cu118 wheels and compatible `torch-cluster` build.
+
+## Usage
+
+- The script `sample.sh` demonstrates mesh generation. Input is an OBJ where each part is stored as a distinct connected component within a single file (see folder `input_pf`).
+- Pre-trained weights are available on Hugging Face: [here](https://huggingface.co/Xrvitd/MeshMosaic).
+
+Or run directly with the following command:
+```bash
+torchrun --nproc-per-node=1 --master_port=61107 sampleGPCBD.py \
+  --model_path "ckpt/final.bin" \
+  --steps 40000 \
+  --input_path input_pf \
+  --output_path output \
+  --repeat_num 4 \
+  --uid_list "" \
+  --temperature 0.5
+```
+
+If you do not have connected-component inputs, you can use the code in the `PartField` folder to convert your own mesh into an OBJ with semantic segmentation. Below is a concise workflow.
+
+### PartField environment setup
+
+- Option A: Manual installation
+```bash
+conda create -n partfield python=3.10 -y
+conda activate partfield
+
+conda install -y nvidia/label/cuda-12.4.0::cuda
+
+pip install psutil
+pip install torch==2.4.0 torchvision==0.19.0 torchaudio==2.4.0 \
+  --index-url https://download.pytorch.org/whl/cu124
+pip install lightning==2.2 h5py yacs trimesh scikit-image loguru boto3
+pip install mesh2sdf tetgen pymeshlab plyfile einops libigl polyscope \
+  potpourri3d simple_parsing arrgh open3d
+pip install torch-scatter -f https://data.pyg.org/whl/torch-2.4.0+cu124.html
+
+sudo apt-get update && sudo apt-get install -y libx11-6 libgl1 libxrender1
+pip install vtk
+```
+
+- Option B: Use provided environment file
+```bash
+conda env create -f environment.yml
+conda activate partfield
+```
+
+### Prepare checkpoint directory
+```bash
+mkdir -p model
+```
+Download the pretrained checkpoint: [Trained on Objaverse](https://huggingface.co/mikaelaangel/partfield-ckpt/blob/main/model_objaverse.ckpt).
+
+Note: Due to licensing restrictions, the model also trained on PartNet cannot be released.
+
+### Extract Feature Field
+Run from the `PartField` project directory.
+```bash
+python partfield_inference.py -c configs/final/demo.yaml \
+  --opts continue_ckpt model/model_objaverse.ckpt \
+         result_name partfield_features/objaverse \
+         dataset.data_path data/objaverse_samples
+```
+
+### Part segmentation
+We use agglomerative clustering for mesh part segmentation.
+```bash
+python run_part_clustering.py \
+  --root exp_results/partfield_features/objaverse \
+  --dump_dir exp_results/clustering/objaverse \
+  --source_dir data/objaverse_samples \
+  --use_agglo True \
+  --max_num_clusters 30 \
+  --option 0
+```
+
+### Split connected components
+```bash
+python split_connected_component.py
+```
+
+
+Please follow our progress for updates. Training code and more resources will be released soon!
+
+## Ack
+Our code is based on these wonderful works:
+* **[DeepMesh](https://github.com/zhaorw02/DeepMesh)**
+* **[PartField](https://github.com/nv-tlabs/PartField)**
+* **[BPT](https://github.com/Tencent-Hunyuan/bpt)**
+* [Michelangelo](https://github.com/NeuralCarver/Michelangelo)
+
+
+
+
+
 
 ## 📚 Citation
 
